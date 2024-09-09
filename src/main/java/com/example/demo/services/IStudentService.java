@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.dtos.StudentDTO;
 import com.example.demo.models.Student;
+import com.example.demo.responses.StudentResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 

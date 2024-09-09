@@ -1,5 +1,6 @@
 package com.example.demo.responses;
 
+import com.example.demo.dtos.StudentDTO;
 import com.example.demo.models.Student;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,5 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 public class StudentListResponse {
     private int totalPages;
-    private List<Student> students;
+    private List<StudentDTO> students;
 }

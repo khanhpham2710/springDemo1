@@ -3,9 +3,7 @@ package com.example.demo.responses;
 import com.example.demo.dtos.StudentDTO;
 import com.example.demo.models.Ranks;
 import com.example.demo.models.Student;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class StudentResponse extends BaseResponse{
     private String name;
     private String city;
@@ -24,9 +24,10 @@ public class StudentResponse extends BaseResponse{
                 .name(student.getName())
                 .city(student.getCity())
                 .dob(student.getDob())
-                .rank(student.getRank()).build();
-        studentResponse.setCreateAt(LocalDateTime.now());
+                .rank(student.getRank())
+                        .build();
         studentResponse.setUpdateAt(LocalDateTime.now());
+        studentResponse.setCreateAt(LocalDateTime.now());
         return studentResponse;
     }
 }

@@ -2,9 +2,11 @@ package com.example.demo.services;
 
 import com.example.demo.dtos.StudentDTO;
 import com.example.demo.models.Student;
+import com.example.demo.responses.StudentResponse;
 import com.example.demo.respository.StudentRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class StudentService implements IStudentService{
 
     @Override
     public Student findById(long Id) {
-        return studentRespository.findById(Id).orElse(null);
+        return studentRespository.findById(Id).orElseThrow(() -> new OpenApiResourceNotFoundException("Student not found with ID " + Id));
     }
 
     @Override
