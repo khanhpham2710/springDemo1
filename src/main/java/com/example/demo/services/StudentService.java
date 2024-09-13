@@ -1,24 +1,29 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.StudentDTO;
+import com.example.demo.dtos.StudentImageDTO;
+import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.models.Ranks;
 import com.example.demo.models.Student;
-import com.example.demo.responses.StudentResponse;
+import com.example.demo.models.StudentImage;
+import com.example.demo.respository.StudentImageRepository;
 import com.example.demo.respository.StudentRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudentService implements IStudentService{
     private final StudentRespository studentRespository;
+    private final StudentImageRepository studentImageRepository;
 
     @Override
     public List<Student> showAll() {
@@ -27,7 +32,7 @@ public class StudentService implements IStudentService{
 
     @Override
     public Student findById(long Id) {
-        return studentRespository.findById(Id).orElseThrow(() -> new OpenApiResourceNotFoundException("Student not found with ID " + Id));
+        return studentRespository.findById(Id).orElseThrow(() -> new ResourceNotFoundException("Student not found with ID " + Id));
     }
 
     @Override
@@ -37,7 +42,7 @@ public class StudentService implements IStudentService{
             temp.setName(student.getName());
             temp.setCity(student.getCity());
             temp.setDob(student.getDob());
-            temp.setRank(student.getRank());
+            temp.setStudentRank(student.getStudentRank());
         }
         assert temp != null;
         return studentRespository.save(temp);
@@ -45,17 +50,9 @@ public class StudentService implements IStudentService{
 
     @Override
     public String delete(long Id) {
-        try{
-            Optional<Student> student = Optional.ofNullable(findById(Id));
-            if (student.isPresent()){
-                studentRespository.deleteById(Id);
-                return "Đã xóa thành công";
-            }
-        }catch (Exception e){
-            log.error("Xóa không thành công");
-            return "";
-        }
-        return "";
+        Student student = findById(Id);
+        studentRespository.deleteById(Id);
+        return "Đã xóa thành công";
     }
 
     @Override
@@ -65,12 +62,65 @@ public class StudentService implements IStudentService{
 
     @Override
     public Student add(StudentDTO studentDTO) {
-        Student student = Student.builder()
-                .name(studentDTO.getName())
-                .city(studentDTO.getCity())
-                .dob(studentDTO.getDob())
-                .rank(studentDTO.getRank())
-                .build();
-        return studentRespository.save(student);
+        return studentRespository.save(StudentDTO.mapToStudent(studentDTO));
     }
+
+    @Override
+    public Page<Student> findByNameContaining(String name, PageRequest request) {
+        return studentRespository.findByNameContaining(name, request);
+    }
+
+    @Override
+    public List<Student> findByName(String name) {
+        return studentRespository.findByName(name);
+    }
+
+
+    @Override
+    public Page<Student> findByNameContainingIgnoreCaseOrderBy(String name, String orderBy, PageRequest request) {
+        if (Objects.equals(orderBy, "asc")){
+            return studentRespository.findByNameContainingIgnoreCaseOrderByCreateAtAsc(name,request);
+        }else {
+            return studentRespository.findByNameContainingIgnoreCaseOrderByCreateAtDesc(name,request);
+        }
+    }
+
+    @Override
+    public Page<Student> findByNameContainingIgnoreCaseDobBetweenOrderByCreateAtAsc(String name, int startDate, int endDate, PageRequest request) {
+        return studentRespository.findByNameContainingIgnoreCaseDobBetweenOrderByCreateAtAsc(name,startDate,endDate,request);
+    }
+
+    @Override
+    public Page<Student> findByRankOrderByCreateAtAsc(Ranks studentRank, PageRequest request) {
+        return studentRespository.findByStudentRank(studentRank, request);
+    }
+
+    @Override
+    public Page<Student> findByStudentRankAndNameContainingIgnoreCaseOrderByCreateAtAsc(Ranks studentRank, String name, PageRequest request){
+        return studentRespository.findByStudentRankAndNameContainingIgnoreCaseOrderByCreateAtAsc(studentRank,name,request);
+    }
+
+    @Override
+    public Page<Student> searchThanThanh(String name, Ranks studentRank, int startYear, int endYear, PageRequest request) {
+        return studentRespository.searchThanThanh(name, studentRank, startYear, endYear, request);
+    }
+
+    @Override
+    public List<StudentImage> findByStudentId(Long id) {
+        return studentImageRepository.findByStudentId(id);
+    }
+
+    @Override
+    public StudentImage updateImage(Long id, StudentImageDTO studentImageDTO) {
+        Student student = findById(id);
+        if (findByStudentId(id).size() >=4){
+            throw new InvalidParameterException("Mỗi sinh viên chỉ được tối đa 4 hình");
+        }
+        StudentImage studentImage = StudentImage.builder()
+                .student(student)
+                .imageUrl(studentImageDTO.getImageUrl())
+                .build();
+        return studentImageRepository.save(studentImage);
+    }
+
 }

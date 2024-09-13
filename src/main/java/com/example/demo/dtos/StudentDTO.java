@@ -2,14 +2,16 @@ package com.example.demo.dtos;
 
 import com.example.demo.models.Ranks;
 import com.example.demo.models.Student;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
+
+import java.io.Serializable;
 import java.time.LocalDate;
 
 
@@ -18,29 +20,31 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StudentDTO {
-    @NotBlank(message = "Tên không được đẻ trống")
+public class StudentDTO implements Serializable {
+    @NotBlank(message = "Tên không được để trống")
     private String name;
 
-    @NotBlank(message = "Thành phố không được đẻ trống")
+    @NotBlank(message = "Thành phố không được để trống")
     private String city;
 
     @Column(name = "date_of_birth")
     @Past(message = "Nhập ngày sinh ở quá khứ")
     @NotNull(message = "Ngày sinh không được để trống")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Xếp loại không được để trống")
     private Ranks rank;
 
+
+
     public static Student mapToStudent(StudentDTO studentDTO){
         return Student.builder()
                 .name(studentDTO.getName())
                 .city(studentDTO.getCity())
                 .dob(studentDTO.getDob())
-                .rank(studentDTO.getRank())
+                .studentRank(studentDTO.getRank())
                 .build();
     }
 
@@ -49,7 +53,9 @@ public class StudentDTO {
                 .name(student.getName())
                 .city(student.getCity())
                 .dob(student.getDob())
-                .rank(student.getRank())
+                .rank(student.getStudentRank())
                 .build();
     }
+
+
 }

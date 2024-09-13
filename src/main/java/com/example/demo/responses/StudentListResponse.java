@@ -2,10 +2,7 @@ package com.example.demo.responses;
 
 import com.example.demo.dtos.StudentDTO;
 import com.example.demo.models.Student;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,7 +10,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentListResponse {
+@Builder
+public class StudentListResponse{
     private int totalPages;
-    private List<StudentDTO> students;
+    private List<Student> students;
 }

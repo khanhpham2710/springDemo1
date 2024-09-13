@@ -37,5 +37,5 @@ public class Student extends BaseEntity{
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Xếp loại không được để trống")
     @Column(name = "student_rank")
-    private Ranks rank;
+    private Ranks studentRank;
 }

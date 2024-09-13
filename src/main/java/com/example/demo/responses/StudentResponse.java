@@ -1,6 +1,6 @@
 package com.example.demo.responses;
 
-import com.example.demo.dtos.StudentDTO;
+
 import com.example.demo.models.Ranks;
 import com.example.demo.models.Student;
 import lombok.*;
@@ -17,14 +17,14 @@ public class StudentResponse extends BaseResponse{
     private String name;
     private String city;
     private LocalDate dob;
-    private Ranks rank;
+    private Ranks studentRank;
 
     public static StudentResponse mapToResponse(Student student){
         StudentResponse studentResponse = StudentResponse.builder()
                 .name(student.getName())
                 .city(student.getCity())
                 .dob(student.getDob())
-                .rank(student.getRank())
+                .studentRank(student.getStudentRank())
                         .build();
         studentResponse.setUpdateAt(LocalDateTime.now());
         studentResponse.setCreateAt(LocalDateTime.now());
